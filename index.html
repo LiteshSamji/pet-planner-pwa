@@ -1,0 +1,2440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="A beautiful all-in-one pet planner for 2026 — calendars, habits, budget, meals, vision board and more.">
+
+<!-- PWA / iOS -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Pet Planner">
+<meta name="theme-color" content="#C9BAE8">
+<meta name="msapplication-TileColor" content="#C9BAE8">
+<meta name="msapplication-tap-highlight" content="no">
+<meta name="format-detection" content="telephone=no">
+
+<!-- Icons -->
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+
+<!-- Manifest -->
+<link rel="manifest" href="manifest.json">
+<title>🐾 Pet Planner 2026</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #F9C8D0;
+    --blush-light: #FDE8EC;
+    --blush-mid: #F4A7B5;
+    --lavender: #C9BAE8;
+    --lavender-light: #EDE7F9;
+    --lavender-mid: #B39DDB;
+    --sage: #B5D5C5;
+    --sage-light: #E0F0E8;
+    --sage-mid: #88C4A5;
+    --beige: #F5E6D0;
+    --beige-light: #FDF5EB;
+    --beige-mid: #E8C99A;
+    --sky: #B8DCF0;
+    --sky-light: #E0F2FC;
+    --sky-mid: #7FC4E8;
+    --white: #FFFFFF;
+    --cream: #FDFAF6;
+    --text-dark: #3D3240;
+    --text-mid: #6B5E78;
+    --text-light: #9B8EA8;
+    --shadow: rgba(180,160,200,0.18);
+    --shadow-strong: rgba(180,160,200,0.32);
+    --radius: 18px;
+    --radius-sm: 10px;
+    --radius-lg: 28px;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  button, a, [onclick] { touch-action: manipulation; cursor: pointer; }
+
+  body {
+    background: #F7F3FB;
+    color: var(--text-dark);
+    font-family: 'Nunito', sans-serif;
+  }
+
+  /* ─── NAV ─── */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.95);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 18px var(--shadow);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    min-height: 60px;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    color: var(--text-dark);
+    margin-right: 18px;
+    white-space: nowrap;
+  }
+  .nav-logo span { color: #C9BAE8; }
+  .nav-btn {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 50px;
+    padding: 8px 16px;
+    cursor: pointer;
+    background: var(--lavender-light);
+    color: var(--text-mid);
+    transition: all 0.2s;
+    white-space: nowrap;
+    -webkit-appearance: none;
+    appearance: none;
+    touch-action: manipulation;
+    min-height: 36px;
+    user-select: none;
+    -webkit-user-select: none;
+    position: relative;
+    z-index: 2;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    background: var(--lavender);
+    color: var(--text-dark);
+    box-shadow: 0 3px 10px var(--shadow);
+  }
+
+  /* ─── PAGE LAYOUT ─── */
+  .page {
+    display: none;
+    padding: 40px 32px 60px;
+    max-width: 1100px;
+    margin: 0 auto;
+    animation: fadeIn 0.4s ease;
+  }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+  .page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+  .page-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-weight: 500;
+    margin-bottom: 32px;
+  }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    box-shadow: 0 4px 20px var(--shadow);
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-light);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .card-title .icon { font-size: 1rem; }
+
+  .pill {
+    display: inline-block;
+    border-radius: 50px;
+    padding: 3px 12px;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+
+  /* ─── GRID HELPERS ─── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+  /* ─── INPUT LINES ─── */
+  .line {
+    border: none;
+    border-bottom: 1.5px solid #EDE7F9;
+    width: 100%;
+    padding: 6px 4px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    background: transparent;
+    outline: none;
+    margin-bottom: 8px;
+    transition: border-color 0.2s;
+  }
+  .line:focus { border-bottom-color: var(--lavender-mid); }
+  .line::placeholder { color: #C5B8D4; }
+
+  textarea.line {
+    resize: vertical;
+    min-height: 60px;
+    border: 1.5px solid #EDE7F9;
+    border-radius: 8px;
+    padding: 8px;
+  }
+  textarea.line:focus { border-color: var(--lavender-mid); }
+
+  /* ─── CHECKBOXES ─── */
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    color: var(--text-mid);
+  }
+  .check-row input[type=checkbox] {
+    width: 18px; height: 18px;
+    border-radius: 5px;
+    accent-color: var(--lavender-mid);
+    cursor: pointer;
+  }
+
+  /* ──────────────────────────────────────────
+     PAGE 1 – YEAR AT A GLANCE
+  ────────────────────────────────────────── */
+  .year-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 24px;
+  }
+  .mini-month {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: 0 4px 18px var(--shadow);
+  }
+  .mini-month-name {
+    font-weight: 800;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-mid);
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .mini-cal {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.7rem;
+  }
+  .mini-cal th {
+    color: var(--text-light);
+    font-weight: 700;
+    text-align: center;
+    padding: 2px 0;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+  }
+  .mini-cal td {
+    text-align: center;
+    padding: 3px 2px;
+    border-radius: 50%;
+    color: var(--text-mid);
+    cursor: pointer;
+    transition: background 0.15s;
+    font-size: 0.68rem;
+  }
+  .mini-cal td:hover { background: var(--lavender-light); }
+  .mini-cal td.today { background: var(--lavender); color: var(--text-dark); font-weight: 800; border-radius: 50%; }
+  .mini-cal td.sat { color: var(--blush-mid); }
+  .mini-cal td.sun { color: var(--sage-mid); }
+  .mini-cal td.has-note { position:relative; }
+  .mini-cal td.has-note::after { content:''; position:absolute; bottom:1px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:var(--lavender-mid); }
+  .mini-cal td .day-tooltip { display:none; position:absolute; bottom:110%; left:50%; transform:translateX(-50%); background:var(--white); border:1.5px solid var(--lavender); border-radius:8px; padding:4px 8px; font-size:0.62rem; color:var(--text-mid); white-space:nowrap; box-shadow:0 3px 12px var(--shadow); z-index:10; max-width:140px; overflow:hidden; text-overflow:ellipsis; }
+  .mini-cal td:hover .day-tooltip { display:block; }
+
+  .year-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .year-section {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    box-shadow: 0 4px 18px var(--shadow);
+  }
+  .year-section.blush { border-top: 4px solid var(--blush); }
+  .year-section.lavender { border-top: 4px solid var(--lavender); }
+  .year-section.sage { border-top: 4px solid var(--sage); }
+  .year-section.sky { border-top: 4px solid var(--sky); }
+  .year-section.beige { border-top: 4px solid var(--beige-mid); }
+
+  /* ──────────────────────────────────────────
+     PAGE 2 – MONTHLY OVERVIEW
+  ────────────────────────────────────────── */
+  .month-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .month-nav-btn {
+    background: var(--lavender-light);
+    border: none;
+    border-radius: 50px;
+    padding: 8px 18px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    color: var(--text-mid);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  .month-nav-btn:hover { background: var(--lavender); }
+  .month-name-display {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--text-dark);
+  }
+  .month-cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+  .month-cal-grid .day-header {
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-light);
+    padding: 6px 0;
+    letter-spacing: 0.08em;
+  }
+  .month-cal-grid .day-cell {
+    background: var(--beige-light);
+    border-radius: 10px;
+    min-height: 70px;
+    padding: 6px 8px;
+    font-size: 0.72rem;
+    color: var(--text-mid);
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .month-cal-grid .day-cell:hover { background: var(--lavender-light); transform: scale(1.02); }
+  .month-cal-grid .day-cell.today { background: var(--lavender-light); border: 2px solid var(--lavender); }
+  .month-cal-grid .day-cell.other-month { opacity: 0.35; }
+  .day-num { font-weight: 800; font-size: 0.85rem; color: var(--text-dark); }
+  .day-dot { width:6px; height:6px; border-radius:50%; display:inline-block; margin: 1px; }
+
+  .quote-box {
+    background: linear-gradient(135deg, var(--lavender-light), var(--blush-light));
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--text-mid);
+    border-left: 4px solid var(--lavender);
+  }
+
+  .habit-row {
+    display: grid;
+    grid-template-columns: 120px repeat(31, 1fr);
+    gap: 3px;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  .habit-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-mid);
+  }
+  .habit-box {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 4px;
+    background: var(--beige-light);
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: all 0.15s;
+    min-width: 0;
+  }
+  .habit-box:hover { border-color: var(--lavender-mid); background: var(--lavender-light); }
+  .habit-box.checked { background: var(--lavender); border-color: var(--lavender-mid); }
+
+  /* ──────────────────────────────────────────
+     PAGE 3 – WEEKLY PLANNER
+  ────────────────────────────────────────── */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .week-day-col {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 18px var(--shadow);
+    overflow: hidden;
+  }
+  .week-day-header {
+    padding: 10px 12px;
+    font-weight: 800;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-align: center;
+  }
+  .week-day-body { padding: 10px 12px; }
+  .week-section-label {
+    font-size: 0.62rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-light);
+    letter-spacing: 0.1em;
+    margin-bottom: 3px;
+    margin-top: 8px;
+  }
+  .week-line {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #EDE7F9;
+    padding: 4px 2px;
+    font-size: 0.72rem;
+    font-family: 'Nunito', sans-serif;
+    color: var(--text-dark);
+    background: transparent;
+    outline: none;
+    margin-bottom: 3px;
+  }
+
+  /* Colors per weekday */
+  .wd-0 .week-day-header { background: var(--blush-light); color: var(--blush-mid); }
+  .wd-1 .week-day-header { background: var(--lavender-light); color: var(--lavender-mid); }
+  .wd-2 .week-day-header { background: var(--sage-light); color: var(--sage-mid); }
+  .wd-3 .week-day-header { background: var(--sky-light); color: var(--sky-mid); }
+  .wd-4 .week-day-header { background: var(--beige-light); color: var(--beige-mid); }
+  .wd-5 .week-day-header { background: var(--blush-light); color: var(--blush-mid); }
+  .wd-6 .week-day-header { background: var(--lavender-light); color: var(--lavender-mid); }
+
+  /* ──────────────────────────────────────────
+     PAGE 4 – DAILY LOG
+  ────────────────────────────────────────── */
+  .hourly-grid {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 4px 8px;
+  }
+  .hour-label {
+    font-size: 0.7rem;
+    color: var(--text-light);
+    font-weight: 700;
+    text-align: right;
+    padding-top: 6px;
+  }
+  .hour-line {
+    border: none;
+    border-bottom: 1.5px solid #EDE7F9;
+    width: 100%;
+    padding: 5px 4px;
+    font-size: 0.8rem;
+    font-family: 'Nunito', sans-serif;
+    color: var(--text-dark);
+    background: transparent;
+    outline: none;
+    margin-bottom: 4px;
+  }
+  .hour-line:focus { border-bottom-color: var(--lavender-mid); }
+
+  .mood-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .mood-btn {
+    background: var(--beige-light);
+    border: 2px solid transparent;
+    border-radius: 50px;
+    padding: 6px 16px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--text-mid);
+    transition: all 0.2s;
+  }
+  .mood-btn:hover, .mood-btn.active { border-color: var(--lavender-mid); background: var(--lavender-light); }
+
+  .water-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .water-cup {
+    width: 36px; height: 46px;
+    background: var(--sky-light);
+    border: 2px solid var(--sky);
+    border-radius: 4px 4px 8px 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .water-cup::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 0%;
+    background: var(--sky-mid);
+    transition: height 0.3s;
+  }
+  .water-cup.filled::after { height: 100%; }
+  .water-cup:hover { border-color: var(--sky-mid); }
+
+  /* ──────────────────────────────────────────
+     PAGE 5 – VISION BOARD
+  ────────────────────────────────────────── */
+  .vision-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+  }
+  .photo-frame {
+    background: linear-gradient(135deg, var(--blush-light), var(--lavender-light));
+    border-radius: var(--radius-lg);
+    aspect-ratio: 4/3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    font-size: 0.85rem;
+    font-weight: 700;
+    gap: 10px;
+    box-shadow: 0 6px 24px var(--shadow);
+    border: 2.5px dashed var(--lavender);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .photo-frame:hover { transform: translateY(-3px); box-shadow: 0 10px 30px var(--shadow-strong); }
+  .photo-frame .frame-icon { font-size: 2.5rem; opacity: 0.5; }
+  .photo-frame.has-image { border-style: solid; border-color: var(--lavender); padding: 0; overflow: hidden; }
+  .photo-frame.has-image img { width: 100%; height: 100%; object-fit: cover; }
+  .photo-frame.has-image .frame-icon, .photo-frame.has-image .frame-label { display: none; }
+  .photo-frame .remove-img { position:absolute;top:8px;right:8px;background:rgba(255,255,255,0.9);border:none;border-radius:50%;width:28px;height:28px;font-size:1rem;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.15);z-index:2; }
+  .photo-frame.has-image .remove-img { display:flex; }
+  .photo-frame.has-image:hover .remove-img { background:var(--blush-light); }
+  .vision-section {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: 0 4px 18px var(--shadow);
+  }
+  .vision-tag {
+    display: inline-block;
+    background: var(--lavender-light);
+    color: var(--lavender-mid);
+    border-radius: 50px;
+    padding: 4px 12px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    margin: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+  .vision-tag:hover, .vision-tag.selected { background: var(--lavender); border-color: var(--lavender-mid); }
+
+  /* ──────────────────────────────────────────
+     PAGE 6 – HABIT TRACKER
+  ────────────────────────────────────────── */
+  .habit-tracker-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .habit-tracker-table th {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-light);
+    padding: 6px 4px;
+    text-align: center;
+  }
+  .habit-tracker-table td {
+    padding: 4px;
+    text-align: center;
+  }
+  .habit-tracker-table .habit-name {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-mid);
+    text-align: left;
+    padding-left: 8px;
+    white-space: nowrap;
+  }
+  .ht-box {
+    width: 22px; height: 22px;
+    border-radius: 5px;
+    background: var(--beige-light);
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    display: inline-block;
+    transition: all 0.15s;
+    margin: 0 auto;
+  }
+  .ht-box:hover { border-color: var(--lavender-mid); background: var(--lavender-light); }
+  .ht-box.checked { background: var(--lavender); border-color: var(--lavender-mid); }
+  .ht-box.checked.sage { background: var(--sage); border-color: var(--sage-mid); }
+  .ht-box.checked.blush { background: var(--blush); border-color: var(--blush-mid); }
+  .ht-box.checked.sky { background: var(--sky); border-color: var(--sky-mid); }
+  .ht-box.checked.beige { background: var(--beige-mid); border-color: var(--beige-mid); }
+
+  /* ──────────────────────────────────────────
+     PAGE 7 – BUDGET
+  ────────────────────────────────────────── */
+  .budget-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .budget-stat {
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 18px var(--shadow);
+  }
+  .budget-stat .stat-label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-light);
+    margin-bottom: 8px;
+  }
+  .budget-stat .stat-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--text-dark);
+  }
+  .expense-row {
+    display: grid;
+    grid-template-columns: 1fr 140px 80px 28px;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .expense-cat-tag {
+    border-radius: 50px;
+    padding: 3px 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-align: center;
+  }
+  .progress-bar-wrap {
+    background: var(--beige-light);
+    border-radius: 50px;
+    height: 10px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 50px;
+    background: linear-gradient(90deg, var(--sage-mid), var(--sky-mid));
+    transition: width 0.5s;
+  }
+
+  /* ──────────────────────────────────────────
+     PAGE 8 – MEAL PLANNER
+  ────────────────────────────────────────── */
+  .meal-grid {
+    display: grid;
+    grid-template-columns: 80px repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .meal-grid .meal-header {
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-light);
+    text-align: center;
+    padding: 8px 0;
+    letter-spacing: 0.08em;
+  }
+  .meal-grid .meal-type {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--text-mid);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .meal-cell {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 8px;
+    box-shadow: 0 2px 10px var(--shadow);
+    font-size: 0.72rem;
+  }
+  .meal-cell input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.72rem;
+    color: var(--text-dark);
+    outline: none;
+  }
+  .meal-cell input::placeholder { color: #C5B8D4; }
+
+  .rotation-wheel {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .food-chip {
+    background: var(--sage-light);
+    color: var(--sage-mid);
+    border-radius: 50px;
+    padding: 5px 14px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+  .food-chip:hover { border-color: var(--sage-mid); }
+  .food-chip.active { background: var(--sage); }
+
+  /* ──────────────────────────────────────────
+     PAGE 9 – PROJECT PLANNER
+  ────────────────────────────────────────── */
+  .project-type-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .project-type-btn {
+    background: var(--beige-light);
+    border: 2px solid transparent;
+    border-radius: 50px;
+    padding: 8px 20px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--text-mid);
+    transition: all 0.2s;
+  }
+  .project-type-btn.active, .project-type-btn:hover {
+    border-color: var(--lavender-mid);
+    background: var(--lavender-light);
+  }
+  .task-row {
+    display: grid;
+    grid-template-columns: 1fr 120px 100px 28px;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+    background: var(--beige-light);
+    border-radius: 10px;
+    padding: 8px 12px;
+  }
+  .task-status {
+    border-radius: 50px;
+    padding: 3px 10px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    outline: none;
+    background: var(--sky-light);
+    color: var(--sky-mid);
+  }
+  .delete-btn {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: color 0.2s;
+    padding: 0;
+  }
+  .delete-btn:hover { color: var(--blush-mid); }
+  .add-task-btn {
+    background: var(--lavender-light);
+    border: 2px dashed var(--lavender-mid);
+    border-radius: 10px;
+    padding: 10px;
+    width: 100%;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--lavender-mid);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+  .add-task-btn:hover { background: var(--lavender); }
+
+  .progress-circle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .progress-ring { width: 100px; height: 100px; position: relative; }
+  .progress-ring svg { transform: rotate(-90deg); }
+  .progress-ring .ring-bg { fill: none; stroke: var(--lavender-light); stroke-width: 8; }
+  .progress-ring .ring-fill { fill: none; stroke: var(--lavender-mid); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.5s; }
+  .ring-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.3rem;
+    color: var(--text-dark);
+    line-height: 1.1;
+  }
+  .ring-label small { font-size: 0.6rem; color: var(--text-light); }
+
+  /* ──────────────────────────────────────────
+     PAGE 10 – NOTES
+  ────────────────────────────────────────── */
+  .notes-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .notes-tab {
+    background: var(--beige-light);
+    border: none;
+    border-radius: 50px;
+    padding: 8px 20px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-mid);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .notes-tab.active, .notes-tab:hover {
+    background: var(--lavender);
+    color: var(--text-dark);
+  }
+  .notes-area { display: none; }
+  .notes-area.active { display: block; }
+
+  .lined-paper {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 18px var(--shadow);
+    padding: 30px 40px;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 31px,
+      #EDE7F9 31px,
+      #EDE7F9 32px
+    );
+    min-height: 500px;
+    line-height: 32px;
+  }
+  .lined-paper textarea {
+    width: 100%;
+    min-height: 470px;
+    border: none;
+    background: transparent;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    outline: none;
+    line-height: 32px;
+    resize: none;
+  }
+
+  .dotted-paper {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 18px var(--shadow);
+    padding: 30px 40px;
+    background-image: radial-gradient(circle, #C9BAE8 1px, transparent 1px);
+    background-size: 24px 24px;
+    min-height: 500px;
+  }
+  .dotted-paper textarea {
+    width: 100%;
+    min-height: 470px;
+    border: none;
+    background: transparent;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    outline: none;
+    resize: none;
+  }
+
+  .blank-paper {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 18px var(--shadow);
+    padding: 30px 40px;
+    min-height: 500px;
+  }
+  .blank-paper textarea {
+    width: 100%;
+    min-height: 470px;
+    border: none;
+    background: transparent;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    outline: none;
+    resize: none;
+  }
+
+  .milestone-card {
+    background: linear-gradient(135deg, var(--blush-light), var(--lavender-light));
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    display: grid;
+    grid-template-columns: 50px 1fr 80px 30px;
+    gap: 12px;
+    align-items: center;
+    box-shadow: 0 3px 12px var(--shadow);
+  }
+  .milestone-emoji { font-size: 1.8rem; text-align: center; }
+  .milestone-text input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    outline: none;
+  }
+  .milestone-text input::placeholder { color: #C5B8D4; }
+  .milestone-date {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-light);
+    text-align: center;
+  }
+
+  /* ─── COVER / HERO ─── */
+  .cover-hero {
+    background: linear-gradient(135deg, var(--blush-light) 0%, var(--lavender-light) 40%, var(--sky-light) 100%);
+    border-radius: var(--radius-lg);
+    padding: 60px 50px;
+    margin-bottom: 36px;
+    box-shadow: 0 8px 40px var(--shadow-strong);
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-hero::before {
+    content: '';
+    position: absolute;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: var(--lavender);
+    opacity: 0.15;
+    right: -80px; top: -80px;
+  }
+  .cover-hero::after {
+    content: '';
+    position: absolute;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: var(--blush);
+    opacity: 0.2;
+    left: 30%; bottom: -60px;
+  }
+  .cover-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.2rem;
+    line-height: 1.1;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .cover-year {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--lavender-mid);
+    font-style: italic;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+  .cover-desc {
+    color: var(--text-mid);
+    font-size: 0.9rem;
+    max-width: 420px;
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+  }
+  .cover-icons {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 8px;
+  }
+  .cover-pet-name {
+    margin-top: 24px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .cover-pet-name label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-light);
+  }
+  .cover-pet-name input {
+    border: none;
+    border-bottom: 2px solid var(--lavender);
+    background: transparent;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--text-dark);
+    outline: none;
+    padding: 4px 8px;
+    min-width: 180px;
+  }
+
+  /* ─── MISC ─── */
+  .section-divider {
+    border: none;
+    border-top: 2px dashed var(--lavender-light);
+    margin: 28px 0;
+  }
+  .tag-row { display:flex; gap:8px; flex-wrap:wrap; }
+  .tag {
+    font-size: 0.7rem;
+    font-weight: 800;
+    border-radius: 50px;
+    padding: 3px 12px;
+  }
+
+  /* Responsive */
+  @media (max-width: 800px) {
+    .year-grid { grid-template-columns: repeat(3,1fr); }
+    .grid-4 { grid-template-columns: repeat(2,1fr); }
+    .week-grid { grid-template-columns: repeat(2,1fr); }
+    .meal-grid { grid-template-columns: 70px repeat(3,1fr); }
+  }
+  @media (max-width: 600px) {
+    .year-grid { grid-template-columns: repeat(2,1fr); }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .cover-title { font-size: 2rem; }
+    .page { padding: 24px 16px 40px; }
+  }
+
+  /* print */
+  @media print {
+    .nav { display: none; }
+    .page { display: block !important; page-break-after: always; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════ NAV ════════════════ -->
+<nav class="nav">
+  <div class="nav-logo">🐾 Pet <span>Planner</span> 2026</div>
+  <button class="nav-btn active" data-page="cover">Home</button>
+  <button class="nav-btn" data-page="p1">Year</button>
+  <button class="nav-btn" data-page="p2">Monthly</button>
+  <button class="nav-btn" data-page="p3">Weekly</button>
+  <button class="nav-btn" data-page="p4">Daily</button>
+  <button class="nav-btn" data-page="p5">Vision</button>
+  <button class="nav-btn" data-page="p6">Habits</button>
+  <button class="nav-btn" data-page="p7">Budget</button>
+  <button class="nav-btn" data-page="p8">Meals</button>
+  <button class="nav-btn" data-page="p9">Projects</button>
+  <button class="nav-btn" data-page="p10">Notes</button>
+</nav>
+
+<!-- ════════════════ COVER ════════════════ -->
+<div class="page active" id="cover">
+  <div class="cover-hero">
+    <div class="cover-icons">🐾 🦴 🐟 🐱 🐶</div>
+    <div class="cover-title">My Pet Planner</div>
+    <div class="cover-year">A Year of Pawsome Adventures · 2026</div>
+    <div class="cover-desc">Everything you need to care for, celebrate, and plan the best year ever with your beloved pet — all in one beautiful place.</div>
+    <div class="cover-pet-name">
+      <label>My pet's name:</label>
+      <input type="text" placeholder="e.g. Luna 🌙">
+    </div>
+  </div>
+  <div class="grid-3">
+    <div class="card" style="border-top:4px solid var(--blush);">
+      <div class="card-title"><span class="icon">📅</span> Year at a Glance</div>
+      <p style="font-size:0.82rem;color:var(--text-mid);line-height:1.5;">Full 2026 calendar with vet appointments, vaccinations, grooming & milestones.</p>
+      <button class="add-task-btn" style="margin-top:12px;" onclick="showPage('p1')">Open Page →</button>
+    </div>
+    <div class="card" style="border-top:4px solid var(--lavender);">
+      <div class="card-title"><span class="icon">🗓️</span> Monthly Overview</div>
+      <p style="font-size:0.82rem;color:var(--text-mid);line-height:1.5;">Monthly goals, habit tracker, budget overview, and inspiring pet quotes.</p>
+      <button class="add-task-btn" style="margin-top:12px;" onclick="showPage('p2')">Open Page →</button>
+    </div>
+    <div class="card" style="border-top:4px solid var(--sage);">
+      <div class="card-title"><span class="icon">📋</span> Weekly & Daily Logs</div>
+      <p style="font-size:0.82rem;color:var(--text-mid);line-height:1.5;">Day-by-day feeding, walks, meds, mood tracking, and training progress.</p>
+      <button class="add-task-btn" style="margin-top:12px;" onclick="showPage('p3')">Open Pages →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE 1 – YEAR AT A GLANCE ════════════════ -->
+<div class="page" id="p1">
+  <div class="page-title">📅 Year at a Glance — 2026</div>
+  <div class="page-subtitle">🐾 Full 12-month overview for your pet's year</div>
+
+  <div class="year-grid" id="yearCalGrid"></div>
+
+  <div class="year-sections">
+    <div class="year-section blush">
+      <div class="card-title"><span class="icon">🏥</span> Vet Appointments</div>
+      <div class="line-list" id="vet-list">
+        <input class="line" placeholder="Jan — Annual checkup" /><input class="line" placeholder="Mar — Dental cleaning" /><input class="line" placeholder="Jun — Follow-up" /><input class="line" placeholder="Sep — Wellness visit" /><input class="line" placeholder="Dec — Year-end check" />
+      </div>
+    </div>
+    <div class="year-section lavender">
+      <div class="card-title"><span class="icon">💉</span> Vaccinations</div>
+      <input class="line" placeholder="Feb — Rabies booster" /><input class="line" placeholder="Apr — DHPP vaccine" /><input class="line" placeholder="Jul — Bordetella" /><input class="line" placeholder="Oct — Leptospirosis" /><input class="line" placeholder="Dec — Annual review" />
+    </div>
+    <div class="year-section sage">
+      <div class="card-title"><span class="icon">✂️</span> Grooming Schedule</div>
+      <input class="line" placeholder="Monthly: Bath + brush" /><input class="line" placeholder="Every 6 weeks: Full groom" /><input class="line" placeholder="Monthly: Nail trim" /><input class="line" placeholder="Weekly: Ear cleaning" /><input class="line" placeholder="Add custom reminder…" />
+    </div>
+    <div class="year-section sky">
+      <div class="card-title"><span class="icon">🎓</span> Training Milestones</div>
+      <input class="line" placeholder="Q1 — Sit, Stay, Come" /><input class="line" placeholder="Q2 — Leash manners" /><input class="line" placeholder="Q3 — Advanced tricks" /><input class="line" placeholder="Q4 — Therapy pet prep" /><input class="line" placeholder="Add milestone…" />
+    </div>
+    <div class="year-section beige" style="grid-column: span 2;">
+      <div class="card-title"><span class="icon">🎂</span> Birthdays & Gotcha Days</div>
+      <div class="grid-4">
+        <div><input class="line" placeholder="Pet Birthday" /><input class="line" placeholder="Date:" /></div>
+        <div><input class="line" placeholder="Gotcha Day" /><input class="line" placeholder="Date:" /></div>
+        <div><input class="line" placeholder="Special Event" /><input class="line" placeholder="Date:" /></div>
+        <div><input class="line" placeholder="Anniversary" /><input class="line" placeholder="Date:" /></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE 2 – MONTHLY OVERVIEW ════════════════ -->
+<div class="page" id="p2">
+  <div class="page-title">🗓️ Monthly Overview</div>
+  <div class="page-subtitle">🐾 Goals, habits, and highlights for the month</div>
+
+  <div class="quote-box" id="quoteBox">
+    "Until one has loved an animal, a part of one's soul remains unawakened." — Anatole France 🐾
+  </div>
+
+  <div class="month-header">
+    <button class="month-nav-btn" onclick="changeMonth(-1)">← Prev</button>
+    <div class="month-name-display" id="monthDisplay"></div>
+    <button class="month-nav-btn" onclick="changeMonth(1)">Next →</button>
+  </div>
+
+  <div class="month-cal-grid" id="monthCalGrid"></div>
+
+  <div class="grid-2">
+    <div class="card" style="border-top:4px solid var(--blush);">
+      <div class="card-title"><span class="icon">🎯</span> Monthly Pet Goals</div>
+      <div style="margin-bottom:10px;">
+        <div class="pill" style="background:var(--blush-light);color:var(--blush-mid);">Health</div>
+        <input class="line" style="margin-top:6px;" placeholder="e.g. Reduce treats by 20%" />
+      </div>
+      <div style="margin-bottom:10px;">
+        <div class="pill" style="background:var(--lavender-light);color:var(--lavender-mid);">Training</div>
+        <input class="line" style="margin-top:6px;" placeholder="e.g. Master 'down-stay'" />
+      </div>
+      <div>
+        <div class="pill" style="background:var(--sage-light);color:var(--sage-mid);">Enrichment</div>
+        <input class="line" style="margin-top:6px;" placeholder="e.g. Try puzzle feeder" />
+      </div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--lavender);">
+      <div class="card-title"><span class="icon">⭐</span> Monthly Priorities</div>
+      <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Priority 1…" /></div>
+      <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Priority 2…" /></div>
+      <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Priority 3…" /></div>
+      <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Priority 4…" /></div>
+      <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Priority 5…" /></div>
+    </div>
+  </div>
+
+  <div class="card" style="border-top:4px solid var(--sage);">
+    <div class="card-title"><span class="icon">💰</span> Pet Expenses This Month</div>
+    <div class="grid-4">
+      <div style="background:var(--blush-light);border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:0.68rem;font-weight:800;text-transform:uppercase;color:var(--text-light);margin-bottom:6px;">Food</div>
+        <input style="border:none;background:transparent;font-size:1.3rem;font-weight:800;color:var(--text-dark);text-align:center;width:100%;outline:none;font-family:'Nunito',sans-serif;" placeholder="$0" />
+      </div>
+      <div style="background:var(--lavender-light);border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:0.68rem;font-weight:800;text-transform:uppercase;color:var(--text-light);margin-bottom:6px;">Vet</div>
+        <input style="border:none;background:transparent;font-size:1.3rem;font-weight:800;color:var(--text-dark);text-align:center;width:100%;outline:none;font-family:'Nunito',sans-serif;" placeholder="$0" />
+      </div>
+      <div style="background:var(--sage-light);border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:0.68rem;font-weight:800;text-transform:uppercase;color:var(--text-light);margin-bottom:6px;">Grooming</div>
+        <input style="border:none;background:transparent;font-size:1.3rem;font-weight:800;color:var(--text-dark);text-align:center;width:100%;outline:none;font-family:'Nunito',sans-serif;" placeholder="$0" />
+      </div>
+      <div style="background:var(--sky-light);border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:0.68rem;font-weight:800;text-transform:uppercase;color:var(--text-light);margin-bottom:6px;">Other</div>
+        <input style="border:none;background:transparent;font-size:1.3rem;font-weight:800;color:var(--text-dark);text-align:center;width:100%;outline:none;font-family:'Nunito',sans-serif;" placeholder="$0" />
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="border-top:4px solid var(--sky);">
+    <div class="card-title"><span class="icon">✅</span> Monthly Habit Tracker</div>
+    <div style="overflow-x:auto;">
+      <div class="habit-row">
+        <div class="habit-label">🦮 Walks</div>
+        <div id="habit-walks" style="display:contents;"></div>
+      </div>
+      <div class="habit-row">
+        <div class="habit-label">💊 Meds</div>
+        <div id="habit-meds" style="display:contents;"></div>
+      </div>
+      <div class="habit-row">
+        <div class="habit-label">🪮 Brushing</div>
+        <div id="habit-brush" style="display:contents;"></div>
+      </div>
+      <div class="habit-row">
+        <div class="habit-label">🎓 Training</div>
+        <div id="habit-train" style="display:contents;"></div>
+      </div>
+    </div>
+    <div style="margin-top:8px;font-size:0.72rem;color:var(--text-light);">Click any box to mark as done</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">📝</span> Notes</div>
+    <textarea class="line" rows="4" placeholder="Monthly reflections, observations, memorable moments…"></textarea>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE 3 – WEEKLY PLANNER ════════════════ -->
+<div class="page" id="p3">
+  <div class="page-title">📋 Weekly Pet Planner</div>
+  <div class="page-subtitle">🐾 Day-by-day care for your furry family member</div>
+
+  <div class="week-grid" id="weekGrid"></div>
+
+  <div class="grid-2">
+    <div class="card" style="border-top:4px solid var(--lavender);">
+      <div class="card-title"><span class="icon">⭐</span> Weekly Priorities</div>
+      <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Priority this week…" /></div>
+      <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Priority this week…" /></div>
+      <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Priority this week…" /></div>
+      <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Priority this week…" /></div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--sage);">
+      <div class="card-title"><span class="icon">🧩</span> Enrichment Ideas</div>
+      <div class="check-row"><input type="checkbox"><label>Puzzle feeder session</label></div>
+      <div class="check-row"><input type="checkbox"><label>Sniff walk (let them lead)</label></div>
+      <div class="check-row"><input type="checkbox"><label>New trick practice</label></div>
+      <div class="check-row"><input type="checkbox"><label>Playdate / dog park</label></div>
+      <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Custom idea…" /></div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--blush);">
+      <div class="card-title"><span class="icon">✅</span> To-Do List</div>
+      <div id="weekly-todos">
+        <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Task…" /></div>
+        <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Task…" /></div>
+        <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Task…" /></div>
+        <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Task…" /></div>
+        <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Task…" /></div>
+      </div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--sky);">
+      <div class="card-title"><span class="icon">📝</span> Notes</div>
+      <textarea class="line" rows="5" placeholder="Weekly reflections, vet updates, training notes, funny moments…"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE 4 – DAILY LOG ════════════════ -->
+<div class="page" id="p4">
+  <div class="page-title">📓 Daily Pet Log</div>
+  <div class="page-subtitle" id="dailyDate">🐾 Tracking today's care, moments, and milestones</div>
+
+  <div class="grid-2">
+    <div>
+      <div class="card" style="border-top:4px solid var(--blush);">
+        <div class="card-title"><span class="icon">🌟</span> Top 3 Priorities Today</div>
+        <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Priority 1…" /></div>
+        <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Priority 2…" /></div>
+        <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Priority 3…" /></div>
+      </div>
+
+      <div class="card" style="border-top:4px solid var(--lavender);">
+        <div class="card-title"><span class="icon">😸</span> Mood Tracker</div>
+        <div class="mood-row">
+          <button class="mood-btn" onclick="toggleMood(this)">😴 Sleepy</button>
+          <button class="mood-btn" onclick="toggleMood(this)">😊 Happy</button>
+          <button class="mood-btn" onclick="toggleMood(this)">🐾 Playful</button>
+          <button class="mood-btn" onclick="toggleMood(this)">😰 Anxious</button>
+          <button class="mood-btn" onclick="toggleMood(this)">😤 Grumpy</button>
+          <button class="mood-btn" onclick="toggleMood(this)">🤒 Unwell</button>
+        </div>
+      </div>
+
+      <div class="card" style="border-top:4px solid var(--sky);">
+        <div class="card-title"><span class="icon">💧</span> Water Intake</div>
+        <div class="water-row" id="waterCups"></div>
+        <div style="margin-top:8px;font-size:0.72rem;color:var(--text-light);">Click cups to track — each cup = ~250ml</div>
+      </div>
+
+      <div class="card" style="border-top:4px solid var(--sage);">
+        <div class="card-title"><span class="icon">🍽️</span> Feeding Log</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div><div style="font-size:0.7rem;font-weight:700;color:var(--text-light);margin-bottom:4px;">MORNING</div><input class="line" placeholder="Food + amount" /><input class="line" placeholder="Time" /></div>
+          <div><div style="font-size:0.7rem;font-weight:700;color:var(--text-light);margin-bottom:4px;">NOON</div><input class="line" placeholder="Food + amount" /><input class="line" placeholder="Time" /></div>
+          <div><div style="font-size:0.7rem;font-weight:700;color:var(--text-light);margin-bottom:4px;">EVENING</div><input class="line" placeholder="Food + amount" /><input class="line" placeholder="Time" /></div>
+          <div><div style="font-size:0.7rem;font-weight:700;color:var(--text-light);margin-bottom:4px;">TREATS</div><input class="line" placeholder="What + how many" /><input class="line" placeholder="Time" /></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="border-top:4px solid var(--beige-mid);">
+        <div class="card-title"><span class="icon">🕐</span> Hourly Schedule</div>
+        <div class="hourly-grid">
+          <div class="hour-label">7am</div><input class="hour-line" placeholder="Morning routine…" />
+          <div class="hour-label">8am</div><input class="hour-line" placeholder="Breakfast / walk…" />
+          <div class="hour-label">9am</div><input class="hour-line" placeholder="" />
+          <div class="hour-label">10am</div><input class="hour-line" placeholder="" />
+          <div class="hour-label">11am</div><input class="hour-line" placeholder="" />
+          <div class="hour-label">12pm</div><input class="hour-line" placeholder="Noon feeding…" />
+          <div class="hour-label">1pm</div><input class="hour-line" placeholder="" />
+          <div class="hour-label">2pm</div><input class="hour-line" placeholder="" />
+          <div class="hour-label">3pm</div><input class="hour-line" placeholder="Afternoon play…" />
+          <div class="hour-label">4pm</div><input class="hour-line" placeholder="" />
+          <div class="hour-label">5pm</div><input class="hour-line" placeholder="Evening walk…" />
+          <div class="hour-label">6pm</div><input class="hour-line" placeholder="Dinner…" />
+          <div class="hour-label">7pm</div><input class="hour-line" placeholder="" />
+          <div class="hour-label">8pm</div><input class="hour-line" placeholder="Bedtime routine…" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card" style="border-top:4px solid var(--blush);">
+      <div class="card-title"><span class="icon">📝</span> Behavior Notes</div>
+      <textarea class="line" rows="3" placeholder="Any unusual behavior, reactions, energy levels…"></textarea>
+    </div>
+    <div class="card" style="border-top:4px solid var(--sage);">
+      <div class="card-title"><span class="icon">🎓</span> Training Progress</div>
+      <input class="line" placeholder="Skill worked on today…" />
+      <input class="line" placeholder="Repetitions / duration…" />
+      <input class="line" placeholder="Progress notes…" />
+    </div>
+    <div class="card" style="background:linear-gradient(135deg,var(--blush-light),var(--lavender-light));border:none;">
+      <div class="card-title"><span class="icon">📸</span> Today's Cute Moment</div>
+      <textarea class="line" rows="3" placeholder="Describe the cutest thing they did today… 🥰" style="border-color:#D4C4E8;"></textarea>
+    </div>
+    <div class="card" style="background:linear-gradient(135deg,var(--sage-light),var(--sky-light));border:none;">
+      <div class="card-title"><span class="icon">💛</span> Grateful for my pet because…</div>
+      <textarea class="line" rows="3" placeholder="I'm grateful because… 🐾" style="border-color:#A8D8C0;"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE 5 – VISION BOARD ════════════════ -->
+<div class="page" id="p5">
+  <div class="page-title">✨ Pet Vision Board</div>
+  <div class="page-subtitle">🐾 Dream big for your furry best friend in 2026</div>
+
+  <div class="vision-grid" style="margin-bottom:24px;">
+    <div class="photo-frame" onclick="document.getElementById('visionFile0').click();" id="visionFrame0">
+      <input type="file" accept="image/*" id="visionFile0" style="display:none;" onchange="handleVisionUpload(0,this)" />
+      <div class="frame-icon">📷</div><div class="frame-label">Add a photo of your pet here</div>
+    </div>
+    <div class="photo-frame" onclick="document.getElementById('visionFile1').click();" id="visionFrame1" style="background:linear-gradient(135deg,var(--sage-light),var(--sky-light));border-color:var(--sage);">
+      <input type="file" accept="image/*" id="visionFile1" style="display:none;" onchange="handleVisionUpload(1,this)" />
+      <div class="frame-icon">🌿</div><div class="frame-label">Adventures & outings</div>
+    </div>
+    <div class="photo-frame" onclick="document.getElementById('visionFile2').click();" id="visionFrame2" style="background:linear-gradient(135deg,var(--sky-light),var(--lavender-light));border-color:var(--sky);">
+      <input type="file" accept="image/*" id="visionFile2" style="display:none;" onchange="handleVisionUpload(2,this)" />
+      <div class="frame-icon">🏆</div><div class="frame-label">Goals & achievements</div>
+    </div>
+    <div class="photo-frame" onclick="document.getElementById('visionFile3').click();" id="visionFrame3" style="background:linear-gradient(135deg,var(--beige-light),var(--blush-light));border-color:var(--beige-mid);">
+      <input type="file" accept="image/*" id="visionFile3" style="display:none;" onchange="handleVisionUpload(3,this)" />
+      <div class="frame-icon">💛</div><div class="frame-label">Favorite memories</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="vision-section" style="border-top:4px solid var(--lavender);">
+      <div class="card-title"><span class="icon">🎯</span> 2026 Goals for My Pet</div>
+      <input class="line" placeholder="Health goal…" /><input class="line" placeholder="Training goal…" /><input class="line" placeholder="Adventure goal…" /><input class="line" placeholder="Bonding goal…" />
+    </div>
+    <div class="vision-section" style="border-top:4px solid var(--sage);">
+      <div class="card-title"><span class="icon">🗺️</span> Adventures to Have</div>
+      <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Hike a new trail…" /></div>
+      <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Visit a pet-friendly beach…" /></div>
+      <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Pet-friendly road trip…" /></div>
+      <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Custom adventure…" /></div>
+    </div>
+    <div class="vision-section" style="border-top:4px solid var(--blush);">
+      <div class="card-title"><span class="icon">💬</span> Affirmations</div>
+      <textarea class="line" rows="3" placeholder="My pet is loved, healthy, and thriving…&#10;I am a wonderful pet parent because…"></textarea>
+      <div style="margin-top:10px;font-size:0.8rem;color:var(--text-mid);">Your affirmation tags:</div>
+      <div style="margin-top:8px;" id="affirmTags">
+        <span class="vision-tag" onclick="this.classList.toggle('selected')">🌟 Loved</span>
+        <span class="vision-tag" onclick="this.classList.toggle('selected')" style="background:var(--sage-light);color:var(--sage-mid);">🐾 Healthy</span>
+        <span class="vision-tag" onclick="this.classList.toggle('selected')" style="background:var(--sky-light);color:var(--sky-mid);">✨ Happy</span>
+        <span class="vision-tag" onclick="this.classList.toggle('selected')" style="background:var(--blush-light);color:var(--blush-mid);">💛 Cherished</span>
+        <span class="vision-tag" onclick="this.classList.toggle('selected')">🎓 Growing</span>
+      </div>
+    </div>
+    <div class="vision-section" style="border-top:4px solid var(--sky);">
+      <div class="card-title"><span class="icon">💡</span> Inspiration & Ideas</div>
+      <textarea class="line" rows="3" placeholder="New enrichment activities to try…&#10;Things I want to learn about my pet…&#10;Ways to deepen our bond…"></textarea>
+      <div style="margin-top:10px;">
+        <input class="line" placeholder="Inspired by (book, account, trainer)…" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE 6 – YEARLY HABIT TRACKER ════════════════ -->
+<div class="page" id="p6">
+  <div class="page-title">✅ Yearly Habit Tracker</div>
+  <div class="page-subtitle">🐾 Track daily habits across all 12 months of 2026</div>
+
+  <div id="yearHabitTabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;"></div>
+  <div class="card">
+    <div id="yearHabitGrid" style="overflow-x:auto;"></div>
+    <div style="margin-top:12px;font-size:0.72rem;color:var(--text-light);">Click any cell to mark the habit as done for that day.</div>
+  </div>
+
+  <div class="grid-3" style="margin-top:20px;">
+    <div class="card" style="text-align:center;background:var(--lavender-light);border:none;">
+      <div class="card-title" style="justify-content:center;"><span class="icon">🦮</span> Walk Streak</div>
+      <div style="font-family:'Playfair Display',serif;font-size:2.5rem;color:var(--text-dark);" id="walkStreak">0</div>
+      <div style="font-size:0.75rem;color:var(--text-light);">days in a row</div>
+    </div>
+    <div class="card" style="text-align:center;background:var(--sage-light);border:none;">
+      <div class="card-title" style="justify-content:center;"><span class="icon">🎓</span> Training Days</div>
+      <div style="font-family:'Playfair Display',serif;font-size:2.5rem;color:var(--text-dark);" id="trainCount">0</div>
+      <div style="font-size:0.75rem;color:var(--text-light);">sessions this year</div>
+    </div>
+    <div class="card" style="text-align:center;background:var(--blush-light);border:none;">
+      <div class="card-title" style="justify-content:center;"><span class="icon">💊</span> Meds Given</div>
+      <div style="font-family:'Playfair Display',serif;font-size:2.5rem;color:var(--text-dark);" id="medsCount">0</div>
+      <div style="font-size:0.75rem;color:var(--text-light);">doses tracked</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE 7 – BUDGET ════════════════ -->
+<div class="page" id="p7">
+  <div class="page-title">💰 Pet Budget Planner</div>
+  <div class="page-subtitle">🐾 Track every penny you spend on your beloved pet</div>
+
+  <div class="budget-summary">
+    <div class="budget-stat" style="background:var(--lavender-light);">
+      <div class="stat-label">Monthly Budget</div>
+      <div class="stat-val"><input id="budgetInput" oninput="updateBudgetSummary()" style="border:none;background:transparent;font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--text-dark);width:100%;text-align:center;outline:none;" placeholder="$250" /></div>
+    </div>
+    <div class="budget-stat" style="background:var(--blush-light);">
+      <div class="stat-label">Spent This Month</div>
+      <div class="stat-val" id="spentDisplay" style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--text-dark);">$0</div>
+      <div class="progress-bar-wrap" style="margin-top:8px;"><div class="progress-bar-fill" id="spentBar" style="width:0%;background:linear-gradient(90deg,var(--blush-mid),var(--lavender-mid));"></div></div>
+    </div>
+    <div class="budget-stat" id="remainingStat" style="background:var(--sage-light);">
+      <div class="stat-label">Remaining</div>
+      <div class="stat-val" id="remainingDisplay" style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--text-dark);">$0</div>
+      <div style="font-size:0.72rem;color:var(--text-light);margin-top:4px;" id="remainingPct">—</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card" style="border-top:4px solid var(--lavender);">
+      <div class="card-title"><span class="icon">📊</span> Expense Tracker</div>
+      <div style="display:grid;grid-template-columns:1fr 140px 80px 28px;gap:8px;font-size:0.7rem;font-weight:800;text-transform:uppercase;color:var(--text-light);margin-bottom:8px;padding:0 4px;">
+        <span>Item</span><span style="text-align:left;padding-left:8px;">Category</span><span>Amount</span><span></span>
+      </div>
+      <div id="expenseRows">
+        <div class="expense-row"><input class="line expense-item" style="margin:0;" placeholder="Kibble bag…" /><select class="expense-cat" style="border:none;background:var(--blush-light);border-radius:50px;padding:4px 8px;font-family:'Nunito',sans-serif;font-size:0.7rem;font-weight:700;color:var(--blush-mid);outline:none;cursor:pointer;"><option>🍗 Food</option><option>🏥 Vet</option><option>✂️ Groom</option><option>🎾 Toy</option><option>💊 Meds</option><option>📦 Other</option></select><input class="line expense-amount" oninput="updateBudgetSummary()" style="margin:0;" placeholder="$0" /><button class="delete-btn" onclick="this.closest('.expense-row').remove();updateBudgetSummary();" style="margin-left:4px;">×</button></div>
+        <div class="expense-row"><input class="line expense-item" style="margin:0;" placeholder="Vet visit…" /><select class="expense-cat" style="border:none;background:var(--lavender-light);border-radius:50px;padding:4px 8px;font-family:'Nunito',sans-serif;font-size:0.7rem;font-weight:700;color:var(--lavender-mid);outline:none;cursor:pointer;"><option>🍗 Food</option><option>🏥 Vet</option><option>✂️ Groom</option><option>🎾 Toy</option><option>💊 Meds</option><option>📦 Other</option></select><input class="line expense-amount" oninput="updateBudgetSummary()" style="margin:0;" placeholder="$0" /><button class="delete-btn" onclick="this.closest('.expense-row').remove();updateBudgetSummary();" style="margin-left:4px;">×</button></div>
+        <div class="expense-row"><input class="line expense-item" style="margin:0;" placeholder="Groomer…" /><select class="expense-cat" style="border:none;background:var(--sage-light);border-radius:50px;padding:4px 8px;font-family:'Nunito',sans-serif;font-size:0.7rem;font-weight:700;color:var(--sage-mid);outline:none;cursor:pointer;"><option>🍗 Food</option><option>🏥 Vet</option><option>✂️ Groom</option><option>🎾 Toy</option><option>💊 Meds</option><option>📦 Other</option></select><input class="line expense-amount" oninput="updateBudgetSummary()" style="margin:0;" placeholder="$0" /><button class="delete-btn" onclick="this.closest('.expense-row').remove();updateBudgetSummary();" style="margin-left:4px;">×</button></div>
+      </div>
+      <button class="add-task-btn" onclick="addExpenseRow()" style="margin-top:8px;">+ Add Expense</button>
+    </div>
+
+    <div>
+      <div class="card" style="border-top:4px solid var(--sage);">
+        <div class="card-title"><span class="icon">🐖</span> Savings Tracker</div>
+        <div style="margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;font-size:0.75rem;font-weight:700;color:var(--text-mid);margin-bottom:4px;">
+            <span>Emergency Fund</span><span id="savLabel1">$0 / $1000</span>
+          </div>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="savBar1" style="width:0%;background:linear-gradient(90deg,var(--sage-mid),var(--sky-mid));"></div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+            <input class="line sav-current" data-sav="1" oninput="updateSavings()" style="margin:0;" placeholder="Current: $0" />
+            <input class="line sav-goal" data-sav="1" oninput="updateSavings()" style="margin:0;" placeholder="Goal: $1000" />
+          </div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:0.75rem;font-weight:700;color:var(--text-mid);margin-bottom:4px;">
+            <span>Vacation / Pet Sitter</span><span id="savLabel2">$0 / $500</span>
+          </div>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="savBar2" style="width:0%;background:linear-gradient(90deg,var(--lavender-mid),var(--blush-mid));"></div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+            <input class="line sav-current" data-sav="2" oninput="updateSavings()" style="margin:0;" placeholder="Current: $0" />
+            <input class="line sav-goal" data-sav="2" oninput="updateSavings()" style="margin:0;" placeholder="Goal: $500" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="border-top:4px solid var(--blush);">
+        <div class="card-title"><span class="icon">📦</span> Subscriptions <span id="subTotal" style="margin-left:auto;font-size:0.72rem;font-weight:800;color:var(--sage-mid);letter-spacing:0;">Total: $0/mo</span></div>
+        <div id="subRows" style="display:grid;gap:8px;">
+          <div class="sub-row" style="background:var(--beige-light);border-radius:10px;padding:10px 14px;display:grid;grid-template-columns:1fr 60px 70px 24px;gap:8px;align-items:center;">
+            <input style="border:none;background:transparent;font-size:0.8rem;font-family:'Nunito',sans-serif;color:var(--text-dark);outline:none;" placeholder="🐾 Food delivery…" />
+            <input style="border:none;background:transparent;font-size:0.8rem;font-family:'Nunito',sans-serif;color:var(--text-mid);outline:none;text-align:center;" placeholder="Monthly" />
+            <input class="sub-amount" oninput="updateBudgetSummary()" style="border:none;background:transparent;font-size:0.8rem;font-family:'Nunito',sans-serif;color:var(--text-dark);outline:none;text-align:right;" placeholder="$29" />
+            <button class="delete-btn" onclick="this.closest('.sub-row').remove();updateBudgetSummary();">×</button>
+          </div>
+          <div class="sub-row" style="background:var(--beige-light);border-radius:10px;padding:10px 14px;display:grid;grid-template-columns:1fr 60px 70px 24px;gap:8px;align-items:center;">
+            <input style="border:none;background:transparent;font-size:0.8rem;font-family:'Nunito',sans-serif;color:var(--text-dark);outline:none;" placeholder="💊 Flea/tick meds…" />
+            <input style="border:none;background:transparent;font-size:0.8rem;font-family:'Nunito',sans-serif;color:var(--text-mid);outline:none;text-align:center;" placeholder="Monthly" />
+            <input class="sub-amount" oninput="updateBudgetSummary()" style="border:none;background:transparent;font-size:0.8rem;font-family:'Nunito',sans-serif;color:var(--text-dark);outline:none;text-align:right;" placeholder="$18" />
+            <button class="delete-btn" onclick="this.closest('.sub-row').remove();updateBudgetSummary();">×</button>
+          </div>
+          <div class="sub-row" style="background:var(--beige-light);border-radius:10px;padding:10px 14px;display:grid;grid-template-columns:1fr 60px 70px 24px;gap:8px;align-items:center;">
+            <input style="border:none;background:transparent;font-size:0.8rem;font-family:'Nunito',sans-serif;color:var(--text-dark);outline:none;" placeholder="🏥 Pet insurance…" />
+            <input style="border:none;background:transparent;font-size:0.8rem;font-family:'Nunito',sans-serif;color:var(--text-mid);outline:none;text-align:center;" placeholder="Monthly" />
+            <input class="sub-amount" oninput="updateBudgetSummary()" style="border:none;background:transparent;font-size:0.8rem;font-family:'Nunito',sans-serif;color:var(--text-dark);outline:none;text-align:right;" placeholder="$45" />
+            <button class="delete-btn" onclick="this.closest('.sub-row').remove();updateBudgetSummary();">×</button>
+          </div>
+        </div>
+        <button class="add-task-btn" onclick="addSubRow()" style="margin-top:8px;">+ Add Subscription</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE 8 – MEAL PLANNER ════════════════ -->
+<div class="page" id="p8">
+  <div class="page-title">🍽️ Pet Meal Planner</div>
+  <div class="page-subtitle">🐾 Plan balanced, nutritious meals for your pet all week</div>
+
+  <div class="card" style="border-top:4px solid var(--sage);overflow:auto;margin-bottom:20px;">
+    <div class="card-title"><span class="icon">📅</span> Weekly Meal Planner</div>
+    <div class="meal-grid" id="mealPlannerGrid"></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card" style="border-top:4px solid var(--blush);">
+      <div class="card-title"><span class="icon">🔄</span> Food Rotation Chart</div>
+      <p style="font-size:0.78rem;color:var(--text-light);margin-bottom:12px;">Click to mark foods currently in rotation:</p>
+      <div class="rotation-wheel">
+        <span class="food-chip" onclick="this.classList.toggle('active')">🐟 Salmon</span>
+        <span class="food-chip" onclick="this.classList.toggle('active')" style="background:var(--blush-light);color:var(--blush-mid);">🍗 Chicken</span>
+        <span class="food-chip" onclick="this.classList.toggle('active')" style="background:var(--sky-light);color:var(--sky-mid);">🥕 Carrots</span>
+        <span class="food-chip" onclick="this.classList.toggle('active')">🥩 Beef</span>
+        <span class="food-chip" onclick="this.classList.toggle('active')" style="background:var(--lavender-light);color:var(--lavender-mid);">🦃 Turkey</span>
+        <span class="food-chip" onclick="this.classList.toggle('active')" style="background:var(--beige-light);color:var(--beige-mid);">🌾 Brown Rice</span>
+        <span class="food-chip" onclick="this.classList.toggle('active')">🥦 Broccoli</span>
+        <span class="food-chip" onclick="this.classList.toggle('active')" style="background:var(--blush-light);color:var(--blush-mid);">🍠 Sweet Potato</span>
+      </div>
+      <div style="margin-top:14px;">
+        <input class="line" placeholder="Add custom food…" />
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="border-top:4px solid var(--lavender);">
+        <div class="card-title"><span class="icon">🦴</span> Treat Log</div>
+        <div style="display:grid;gap:6px;">
+          <div style="display:grid;grid-template-columns:1fr 80px;gap:8px;"><input class="line" style="margin:0;" placeholder="Treat name…" /><input class="line" style="margin:0;" placeholder="# given" /></div>
+          <div style="display:grid;grid-template-columns:1fr 80px;gap:8px;"><input class="line" style="margin:0;" placeholder="Treat name…" /><input class="line" style="margin:0;" placeholder="# given" /></div>
+          <div style="display:grid;grid-template-columns:1fr 80px;gap:8px;"><input class="line" style="margin:0;" placeholder="Treat name…" /><input class="line" style="margin:0;" placeholder="# given" /></div>
+        </div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--sky);">
+        <div class="card-title"><span class="icon">🛒</span> Grocery / Supply List</div>
+        <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Item to buy…" /></div>
+        <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Item to buy…" /></div>
+        <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Item to buy…" /></div>
+        <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Item to buy…" /></div>
+        <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Item to buy…" /></div>
+        <div class="check-row"><input type="checkbox"><input class="line" style="margin:0;" placeholder="Item to buy…" /></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE 9 – PROJECT PLANNER ════════════════ -->
+<div class="page" id="p9">
+  <div class="page-title">📌 Pet Project Planner</div>
+  <div class="page-subtitle">🐾 Plan, track, and complete your pet care projects</div>
+
+  <div class="card" style="border-top:4px solid var(--lavender);margin-bottom:20px;">
+    <div class="card-title"><span class="icon">🏷️</span> Project Type</div>
+    <div class="project-type-row" id="projectTypeRow">
+      <button class="project-type-btn active" onclick="switchProject('training')">🎓 Training</button>
+      <button class="project-type-btn" onclick="switchProject('health')">🏥 Health</button>
+      <button class="project-type-btn" onclick="switchProject('grooming')">✂️ Grooming</button>
+      <button class="project-type-btn" onclick="switchProject('travel')">✈️ Travel</button>
+      <button class="project-type-btn" onclick="switchProject('enrichment')">🧩 Enrichment</button>
+      <button class="project-type-btn" onclick="switchProject('other')">📦 Other</button>
+    </div>
+  </div>
+
+  <div id="projectContent">
+    <!-- Dynamically rendered per project type -->
+  </div>
+</div>
+
+<!-- ════════════════ PAGE 10 – NOTES ════════════════ -->
+<div class="page" id="p10">
+  <div class="page-title">📝 Notes Pages</div>
+  <div class="page-subtitle">🐾 Capture every thought, memory, and funny moment</div>
+
+  <div class="notes-tabs">
+    <button class="notes-tab active" onclick="switchNotes(this,'lined')">📏 Lined Notes</button>
+    <button class="notes-tab" onclick="switchNotes(this,'dotted')">· · Dotted Notes</button>
+    <button class="notes-tab" onclick="switchNotes(this,'blank')">⬜ Blank Notes</button>
+    <button class="notes-tab" onclick="switchNotes(this,'milestones')">🏆 Milestones & Moments</button>
+  </div>
+
+  <div class="notes-area active" id="notes-lined">
+    <div class="lined-paper"><textarea placeholder="Start writing your notes here…&#10;&#10;Your thoughts, observations, reminders, and reflections all belong here.&#10;"></textarea></div>
+  </div>
+  <div class="notes-area" id="notes-dotted">
+    <div class="dotted-paper"><textarea placeholder="Use the dots as your guide… sketch, plan, or write freely.&#10;&#10;This space is all yours and your pet's story.&#10;"></textarea></div>
+  </div>
+  <div class="notes-area" id="notes-blank">
+    <div class="blank-paper"><textarea placeholder="A completely blank canvas for your ideas, sketches, and plans…&#10;&#10;Let your imagination run wild! 🐾✨&#10;"></textarea></div>
+  </div>
+  <div class="notes-area" id="notes-milestones">
+    <div class="card" style="background:linear-gradient(135deg,var(--lavender-light),var(--blush-light));margin-bottom:20px;">
+      <div class="card-title" style="font-size:1rem;"><span class="icon">🏆</span> Funny Moments & Pet Milestones</div>
+      <p style="font-size:0.82rem;color:var(--text-mid);margin-bottom:16px;">Capture the moments you never want to forget. Every milestone, big or small, deserves a place here! 🐾</p>
+    </div>
+    <div id="milestoneList">
+      <div class="milestone-card"><div class="milestone-emoji">🎂</div><div class="milestone-text"><input placeholder="First birthday with us!" /><input placeholder="Notes about this moment…" style="font-size:0.75rem;color:var(--text-light);" /></div><div class="milestone-date"><input type="date" style="border:none;background:transparent;font-size:0.7rem;font-family:'Nunito',sans-serif;color:var(--text-light);outline:none;width:100%;text-align:center;" /></div><button class="delete-btn" onclick="this.closest('.milestone-card').remove()">×</button></div>
+      <div class="milestone-card" style="background:linear-gradient(135deg,var(--sage-light),var(--sky-light));"><div class="milestone-emoji">🎓</div><div class="milestone-text"><input placeholder="Learned 'shake hands' today!" /><input placeholder="Notes about this moment…" style="font-size:0.75rem;color:var(--text-light);" /></div><div class="milestone-date"><input type="date" style="border:none;background:transparent;font-size:0.7rem;font-family:'Nunito',sans-serif;color:var(--text-light);outline:none;width:100%;text-align:center;" /></div><button class="delete-btn" onclick="this.closest('.milestone-card').remove()">×</button></div>
+      <div class="milestone-card" style="background:linear-gradient(135deg,var(--sky-light),var(--lavender-light));"><div class="milestone-emoji">😂</div><div class="milestone-text"><input placeholder="Chased their own tail for 5 minutes…" /><input placeholder="Notes about this moment…" style="font-size:0.75rem;color:var(--text-light);" /></div><div class="milestone-date"><input type="date" style="border:none;background:transparent;font-size:0.7rem;font-family:'Nunito',sans-serif;color:var(--text-light);outline:none;width:100%;text-align:center;" /></div><button class="delete-btn" onclick="this.closest('.milestone-card').remove()">×</button></div>
+    </div>
+    <button class="add-task-btn" onclick="addMilestone()" style="margin-top:12px;">+ Add a Moment</button>
+  </div>
+</div>
+
+<script>
+// ─── PAGE NAVIGATION ───
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const labels = ['cover','p1','p2','p3','p4','p5','p6','p7','p8','p9','p10'];
+  const idx = labels.indexOf(id);
+  if(idx >= 0) document.querySelectorAll('.nav-btn')[idx]?.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ─── CALENDAR DATA ───
+const months2026 = [
+  {name:'January',days:31,start:4},  // Thu
+  {name:'February',days:28,start:0},
+  {name:'March',days:31,start:0},
+  {name:'April',days:30,start:3},
+  {name:'May',days:31,start:5},
+  {name:'June',days:30,start:1},
+  {name:'July',days:31,start:3},
+  {name:'August',days:31,start:6},
+  {name:'September',days:30,start:2},
+  {name:'October',days:31,start:4},
+  {name:'November',days:30,start:0},
+  {name:'December',days:31,start:2},
+];
+const dayAbbr = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+const dayFull = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+// ─── DAY NOTES STORE ───
+const dayNotes = {}; // key: "mi-d" e.g. "2-15" = March 15
+function getDayNoteKey(mi, d) { return mi + '-' + d; }
+function saveDayNotes() {
+  try { localStorage.setItem('petplanner_daynotes', JSON.stringify(dayNotes)); } catch(e){}
+}
+function restoreDayNotes() {
+  try {
+    const data = JSON.parse(localStorage.getItem('petplanner_daynotes') || '{}');
+    Object.assign(dayNotes, data);
+  } catch(e){}
+}
+
+// ─── PAGE 1: YEAR CALENDAR ───
+function buildYearCal() {
+  const grid = document.getElementById('yearCalGrid');
+  grid.innerHTML = '';
+  const today = new Date();
+  months2026.forEach((m, mi) => {
+    const div = document.createElement('div');
+    div.className = 'mini-month';
+    const colors = ['blush','lavender','sage','sky','beige','lavender','blush','sage','sky','beige','lavender','blush'];
+    const borders = {blush:'var(--blush)',lavender:'var(--lavender)',sage:'var(--sage)',sky:'var(--sky)',beige:'var(--beige-mid)'};
+    div.style.borderTop = '3px solid ' + borders[colors[mi]];
+    let html = `<div class="mini-month-name">${m.name.slice(0,3).toUpperCase()}</div><table class="mini-cal"><thead><tr>`;
+    dayAbbr.forEach(d => html += `<th>${d}</th>`);
+    html += '</tr></thead><tbody><tr>';
+    for(let i=0;i<m.start;i++) html += '<td></td>';
+    let col = m.start;
+    for(let d=1;d<=m.days;d++) {
+      const isToday = today.getFullYear()===2026 && today.getMonth()===mi && today.getDate()===d;
+      const noteKey = getDayNoteKey(mi, d);
+      const hasNote = dayNotes[noteKey] ? ' has-note' : '';
+      const noteText = dayNotes[noteKey] || '';
+      const cls = (isToday ? 'today' : col===0 ? 'sun' : col===6 ? 'sat' : '') + hasNote;
+      const tooltip = noteText ? `<span class="day-tooltip">${noteText.replace(/</g,'&lt;').substring(0,60)}</span>` : '';
+      html += `<td class="${cls}" style="position:relative;" onclick="yearDayClick(${mi},${d})" title="${noteText.replace(/"/g,'&quot;')}">${d}${tooltip}</td>`;
+      col = (col+1)%7;
+      if(col===0 && d<m.days) html += '</tr><tr>';
+    }
+    while(col>0 && col<7) { html += '<td></td>'; col++; }
+    html += '</tr></tbody></table>';
+    div.innerHTML = html;
+    grid.appendChild(div);
+  });
+}
+
+function yearDayClick(mi, d) {
+  const key = getDayNoteKey(mi, d);
+  const current = dayNotes[key] || '';
+  const note = prompt(months2026[mi].name + ' ' + d + ' — Enter note:', current);
+  if(note !== null) {
+    if(note.trim()) {
+      dayNotes[key] = note.trim();
+    } else {
+      delete dayNotes[key];
+    }
+    saveDayNotes();
+    buildYearCal();
+  }
+}
+
+// ─── PAGE 2: MONTHLY CALENDAR ───
+let currentMonthIdx = 2; // March 2026 (approx today)
+function buildMonthCal() {
+  const m = months2026[currentMonthIdx];
+  document.getElementById('monthDisplay').textContent = m.name + ' 2026';
+  const grid = document.getElementById('monthCalGrid');
+  grid.innerHTML = '';
+  dayAbbr.forEach(d => {
+    const hdr = document.createElement('div');
+    hdr.className = 'day-header';
+    hdr.textContent = d;
+    grid.appendChild(hdr);
+  });
+  for(let i=0;i<m.start;i++) {
+    const c = document.createElement('div');
+    c.className = 'day-cell other-month';
+    const prev = months2026[(currentMonthIdx-1+12)%12];
+    c.innerHTML = `<div class="day-num">${prev.days - m.start + i + 1}</div>`;
+    grid.appendChild(c);
+  }
+  const today = new Date();
+  for(let d=1;d<=m.days;d++) {
+    const c = document.createElement('div');
+    const isToday = today.getFullYear()===2026 && today.getMonth()===currentMonthIdx && today.getDate()===d;
+    c.className = 'day-cell' + (isToday ? ' today' : '');
+    const noteKey = getDayNoteKey(currentMonthIdx, d);
+    const noteVal = dayNotes[noteKey] || '';
+    const inp = document.createElement('input');
+    inp.style.cssText = 'border:none;background:transparent;font-size:0.62rem;font-family:Nunito,sans-serif;color:var(--text-mid);outline:none;width:100%;';
+    inp.placeholder = 'notes…';
+    inp.value = noteVal;
+    inp.dataset.mi = currentMonthIdx;
+    inp.dataset.d = d;
+    inp.addEventListener('input', function() {
+      const k = getDayNoteKey(this.dataset.mi, this.dataset.d);
+      if(this.value.trim()) { dayNotes[k] = this.value.trim(); }
+      else { delete dayNotes[k]; }
+      saveDayNotes();
+    });
+    c.innerHTML = `<div class="day-num">${d}</div>`;
+    c.appendChild(inp);
+    grid.appendChild(c);
+  }
+  const remaining = 42 - m.start - m.days;
+  for(let d=1;d<=remaining;d++) {
+    const c = document.createElement('div');
+    c.className = 'day-cell other-month';
+    c.innerHTML = `<div class="day-num">${d}</div>`;
+    grid.appendChild(c);
+  }
+}
+function changeMonth(dir) {
+  currentMonthIdx = (currentMonthIdx + dir + 12) % 12;
+  buildMonthCal();
+}
+
+// ─── PAGE 2: HABIT BOXES ───
+function buildHabitBoxes() {
+  ['habit-walks','habit-meds','habit-brush','habit-train'].forEach(id => {
+    const container = document.getElementById(id);
+    if(!container) return;
+    const m = months2026[currentMonthIdx];
+    for(let d=1;d<=31;d++) {
+      const box = document.createElement('div');
+      box.className = 'habit-box' + (d > m.days ? ' other-month' : '');
+      if(d <= m.days) {
+        box.title = `Day ${d}`;
+        box.onclick = () => box.classList.toggle('checked');
+      } else {
+        box.style.opacity = '0.2';
+      }
+      container.parentNode.appendChild(box);
+    }
+  });
+}
+
+// ─── PAGE 3: WEEKLY ───
+function buildWeekGrid() {
+  const grid = document.getElementById('weekGrid');
+  grid.innerHTML = '';
+  const today = new Date(2026, 2, 26); // current week
+  const startOfWeek = new Date(today);
+  startOfWeek.setDate(today.getDate() - today.getDay());
+  dayFull.forEach((name, i) => {
+    const d = new Date(startOfWeek);
+    d.setDate(startOfWeek.getDate() + i);
+    const col = document.createElement('div');
+    col.className = `week-day-col wd-${i}`;
+    col.innerHTML = `
+      <div class="week-day-header">${name.slice(0,3)}<br><span style="font-size:0.7rem;opacity:0.7;">${d.getDate()}</span></div>
+      <div class="week-day-body">
+        <div class="week-section-label">🍽️ Feeding</div>
+        <input class="week-line" placeholder="AM: " /><input class="week-line" placeholder="PM: " />
+        <div class="week-section-label">🦮 Walks</div>
+        <input class="week-line" placeholder="Time & duration" />
+        <div class="week-section-label">🎓 Training</div>
+        <input class="week-line" placeholder="Skill / mins" />
+        <div class="week-section-label">💊 Meds</div>
+        <input class="week-line" placeholder="Given ✓" />
+      </div>`;
+    grid.appendChild(col);
+  });
+}
+
+// ─── PAGE 4: WATER CUPS ───
+function buildWaterCups() {
+  const row = document.getElementById('waterCups');
+  row.innerHTML = '';
+  for(let i=0;i<8;i++) {
+    const cup = document.createElement('div');
+    cup.className = 'water-cup';
+    cup.title = `Cup ${i+1}`;
+    cup.onclick = () => cup.classList.toggle('filled');
+    row.appendChild(cup);
+  }
+}
+function toggleMood(btn) { btn.classList.toggle('active'); }
+
+// ─── PAGE 4: DATE ───
+function setDailyDate() {
+  const el = document.getElementById('dailyDate');
+  const d = new Date(2026,2,26);
+  el.textContent = '🐾 ' + d.toLocaleDateString('en-AU',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+
+// ─── PAGE 6: YEARLY HABIT TRACKER ───
+let habitMonth = 0;
+const habitData = {};
+const habitRows = [
+  {label:'🦮 Walks',color:'lavender'},
+  {label:'✂️ Grooming',color:'sage'},
+  {label:'🎓 Training',color:'blush'},
+  {label:'💊 Medication',color:'sky'},
+  {label:'🧩 Enrichment',color:'beige'},
+];
+function buildYearHabitTabs() {
+  const tabs = document.getElementById('yearHabitTabs');
+  tabs.innerHTML = '';
+  months2026.forEach((m,i) => {
+    const btn = document.createElement('button');
+    btn.className = 'notes-tab' + (i===habitMonth ? ' active' : '');
+    btn.textContent = m.name.slice(0,3);
+    btn.onclick = () => { habitMonth = i; buildYearHabitTabs(); buildYearHabitGrid(); };
+    tabs.appendChild(btn);
+  });
+}
+function buildYearHabitGrid() {
+  const m = months2026[habitMonth];
+  const container = document.getElementById('yearHabitGrid');
+  let html = `<table class="habit-tracker-table"><thead><tr><th style="text-align:left;padding-left:8px;">Habit</th>`;
+  for(let d=1;d<=m.days;d++) html += `<th>${d}</th>`;
+  html += '</tr></thead><tbody>';
+  habitRows.forEach((row,ri) => {
+    html += `<tr><td class="habit-name">${row.label}</td>`;
+    for(let d=1;d<=m.days;d++) {
+      const key = `${habitMonth}-${ri}-${d}`;
+      const checked = habitData[key];
+      html += `<td><div class="ht-box ${checked ? 'checked ' + row.color : ''}" onclick="toggleHabit(${habitMonth},${ri},${d},this,'${row.color}')"></div></td>`;
+    }
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+  updateHabitStats();
+}
+function toggleHabit(mi,ri,d,el,color) {
+  const key = `${mi}-${ri}-${d}`;
+  habitData[key] = !habitData[key];
+  el.classList.toggle('checked');
+  if(habitData[key]) el.classList.add(color);
+  else el.classList.remove(color);
+  updateHabitStats();
+}
+function updateHabitStats() {
+  let walks=0, trains=0, meds=0, walkStreak=0;
+  const m = months2026[habitMonth];
+  for(let d=1;d<=m.days;d++) if(habitData[`${habitMonth}-0-${d}`]) { walks++; }
+  for(let d=1;d<=m.days;d++) if(habitData[`${habitMonth}-2-${d}`]) trains++;
+  for(let d=1;d<=m.days;d++) if(habitData[`${habitMonth}-3-${d}`]) meds++;
+  // streak – find latest checked walk day, then count consecutive backwards
+  let streak=0;
+  // Determine the last relevant day (today if current month, else last day)
+  const now = new Date();
+  const isCurrentMonth = (now.getFullYear() === 2026 && now.getMonth() === habitMonth);
+  let lastDay = isCurrentMonth ? Math.min(now.getDate(), m.days) : m.days;
+  // Find the latest checked day at or before lastDay
+  let startDay = -1;
+  for(let d=lastDay;d>=1;d--) {
+    if(habitData[`${habitMonth}-0-${d}`]) { startDay = d; break; }
+  }
+  if(startDay > 0) {
+    for(let d=startDay;d>=1;d--) {
+      if(habitData[`${habitMonth}-0-${d}`]) streak++;
+      else break;
+    }
+  }
+  document.getElementById('walkStreak').textContent = streak;
+  document.getElementById('trainCount').textContent = trains;
+  document.getElementById('medsCount').textContent = meds;
+}
+
+// ─── PAGE 8: MEAL PLANNER ───
+function buildMealPlanner() {
+  const grid = document.getElementById('mealPlannerGrid');
+  grid.innerHTML = '';
+  const days7 = dayFull.map(d=>d.slice(0,3));
+  const mealTypes = [
+    {icon:'🌅',label:'Breakfast'},
+    {icon:'☀️',label:'Lunch'},
+    {icon:'🌙',label:'Dinner'},
+    {icon:'🦴',label:'Treats'},
+  ];
+  // headers
+  const blankHdr = document.createElement('div');
+  blankHdr.className = 'meal-header';
+  grid.appendChild(blankHdr);
+  days7.forEach(d => {
+    const hdr = document.createElement('div');
+    hdr.className = 'meal-header';
+    hdr.textContent = d;
+    grid.appendChild(hdr);
+  });
+  // rows
+  mealTypes.forEach(mt => {
+    const typeCell = document.createElement('div');
+    typeCell.className = 'meal-type';
+    typeCell.innerHTML = `${mt.icon}<span style="font-size:0.65rem;">${mt.label}</span>`;
+    grid.appendChild(typeCell);
+    days7.forEach(() => {
+      const cell = document.createElement('div');
+      cell.className = 'meal-cell';
+      cell.innerHTML = `<input placeholder="—" />`;
+      grid.appendChild(cell);
+    });
+  });
+}
+
+// ─── PAGE 9: PROJECT PLANNER (per-type) ───
+const projectTypes = ['training','health','grooming','travel','enrichment','other'];
+let currentProject = 'training';
+// Each project type stores: {name, goal1, goal2, goal3, startDate, endDate, progressNotes, tasks:[{desc,due,status}]}
+let projectStore = {};
+projectTypes.forEach(t => { projectStore[t] = {name:'',goal1:'',goal2:'',goal3:'',startDate:'',endDate:'',progressNotes:'',tasks:[]}; });
+
+function switchProject(type) {
+  // Save current project data before switching
+  saveCurrentProjectData();
+  currentProject = type;
+  document.querySelectorAll('#projectTypeRow .project-type-btn').forEach(b => b.classList.remove('active'));
+  const btns = document.querySelectorAll('#projectTypeRow .project-type-btn');
+  const idx = projectTypes.indexOf(type);
+  if(btns[idx]) btns[idx].classList.add('active');
+  renderProjectContent();
+}
+
+function saveCurrentProjectData() {
+  const p = projectStore[currentProject];
+  const nameEl = document.getElementById('projName');
+  if(nameEl) p.name = nameEl.value;
+  const g1 = document.getElementById('projGoal1'); if(g1) p.goal1 = g1.value;
+  const g2 = document.getElementById('projGoal2'); if(g2) p.goal2 = g2.value;
+  const g3 = document.getElementById('projGoal3'); if(g3) p.goal3 = g3.value;
+  const sd = document.getElementById('projStartDate'); if(sd) p.startDate = sd.value;
+  const ed = document.getElementById('projEndDate'); if(ed) p.endDate = ed.value;
+  const pn = document.getElementById('projProgressNotes'); if(pn) p.progressNotes = pn.value;
+  // Save tasks
+  p.tasks = [];
+  document.querySelectorAll('#taskList .task-row').forEach(row => {
+    const desc = row.querySelector('.task-desc');
+    const due = row.querySelector('.task-due');
+    const status = row.querySelector('.task-status');
+    if(desc) p.tasks.push({desc:desc.value, due:due?due.value:'', status:status?status.selectedIndex:0});
+  });
+}
+
+function renderProjectContent() {
+  const p = projectStore[currentProject];
+  const totalTasks = p.tasks.filter(t => t.desc && t.desc.trim()).length;
+  const doneTasks = p.tasks.filter(t => t.desc && t.desc.trim() && t.status === 2).length;
+  const pct = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0;
+  const circumference = 2 * Math.PI * 40; // 251.2
+  const offset = circumference - (pct / 100) * circumference;
+
+  let tasksHTML = '';
+  if(p.tasks.length === 0) {
+    // Start with one empty row
+    tasksHTML = makeTaskRowHTML('', '', 0);
+  } else {
+    p.tasks.forEach(t => { tasksHTML += makeTaskRowHTML(t.desc, t.due, t.status); });
+  }
+
+  const html = `
+    <div class="card" style="border-top:4px solid var(--lavender);margin-bottom:20px;">
+      <input class="line" id="projName" placeholder="Project name…" style="font-size:1rem;font-weight:700;" value="${escHTML(p.name)}" oninput="saveCurrentProjectData()" />
+    </div>
+    <div class="grid-2">
+      <div class="card" style="border-top:4px solid var(--blush);">
+        <div class="card-title"><span class="icon">🎯</span> Project Goals</div>
+        <input class="line" id="projGoal1" placeholder="Main goal…" value="${escHTML(p.goal1)}" oninput="saveCurrentProjectData()" />
+        <input class="line" id="projGoal2" placeholder="Secondary goal…" value="${escHTML(p.goal2)}" oninput="saveCurrentProjectData()" />
+        <input class="line" id="projGoal3" placeholder="Success looks like…" value="${escHTML(p.goal3)}" oninput="saveCurrentProjectData()" />
+        <div style="margin-top:12px;">
+          <div class="card-title"><span class="icon">📅</span> Deadlines</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div><div style="font-size:0.68rem;font-weight:800;color:var(--text-light);">START DATE</div><input type="date" class="line" id="projStartDate" style="margin-top:4px;" value="${p.startDate}" onchange="saveCurrentProjectData()" /></div>
+            <div><div style="font-size:0.68rem;font-weight:800;color:var(--text-light);">END DATE</div><input type="date" class="line" id="projEndDate" style="margin-top:4px;" value="${p.endDate}" onchange="saveCurrentProjectData()" /></div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--sage);">
+        <div class="card-title"><span class="icon">📈</span> Progress Tracker</div>
+        <div class="progress-circle-wrap">
+          <div class="progress-ring">
+            <svg viewBox="0 0 100 100" width="100" height="100">
+              <circle class="ring-bg" cx="50" cy="50" r="40" />
+              <circle class="ring-fill" cx="50" cy="50" r="40" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" id="projRingFill" />
+            </svg>
+            <div class="ring-label" id="projRingLabel">${pct}%<small>done</small></div>
+          </div>
+          <div style="flex:1;">
+            <div style="margin-bottom:10px;">
+              <div style="font-size:0.72rem;font-weight:700;color:var(--text-light);margin-bottom:4px;">Tasks Completed</div>
+              <div class="progress-bar-wrap"><div class="progress-bar-fill" id="projTaskBar" style="width:${pct}%;"></div></div>
+              <div style="font-size:0.68rem;color:var(--text-mid);margin-top:4px;">${doneTasks} of ${totalTasks} tasks done</div>
+            </div>
+            <div>
+              <div style="font-size:0.72rem;font-weight:700;color:var(--text-light);margin-bottom:4px;">Overall Progress</div>
+              <input class="line" id="projProgressNotes" placeholder="Notes on progress…" value="${escHTML(p.progressNotes)}" oninput="saveCurrentProjectData()" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--sky);">
+      <div class="card-title"><span class="icon">📋</span> Task Breakdown</div>
+      <div style="display:grid;grid-template-columns:1fr 120px 100px 28px;gap:10px;font-size:0.7rem;font-weight:800;text-transform:uppercase;color:var(--text-light);padding:0 12px 8px;letter-spacing:0.08em;">
+        <span>Task</span><span>Due Date</span><span>Status</span><span></span>
+      </div>
+      <div id="taskList">${tasksHTML}</div>
+      <button class="add-task-btn" onclick="addProjectTask()">+ Add Task</button>
+    </div>`;
+  document.getElementById('projectContent').innerHTML = html;
+}
+
+function escHTML(str) { return (str||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+function makeTaskRowHTML(desc, due, statusIdx) {
+  const options = ['⏳ To Do','🔄 In Progress','✅ Done'];
+  let optHTML = options.map((o,i) => `<option${i===statusIdx?' selected':''}>${o}</option>`).join('');
+  return `<div class="task-row"><input class="task-desc" style="border:none;background:transparent;font-size:0.82rem;font-family:'Nunito',sans-serif;color:var(--text-dark);outline:none;width:100%;" placeholder="Task description…" value="${escHTML(desc)}" oninput="onProjectTaskChange()" /><input type="date" class="task-due" style="border:none;background:transparent;font-size:0.75rem;font-family:'Nunito',sans-serif;color:var(--text-mid);outline:none;" value="${due||''}" onchange="onProjectTaskChange()" /><select class="task-status" onchange="onProjectTaskChange()">${optHTML}</select><button class="delete-btn" onclick="this.closest('.task-row').remove();onProjectTaskChange()">×</button></div>`;
+}
+
+function addProjectTask() {
+  const list = document.getElementById('taskList');
+  const row = document.createElement('div');
+  row.innerHTML = makeTaskRowHTML('', '', 0);
+  list.appendChild(row.firstChild);
+}
+
+function onProjectTaskChange() {
+  saveCurrentProjectData();
+  updateProjectProgress();
+}
+
+function updateProjectProgress() {
+  const p = projectStore[currentProject];
+  const totalTasks = p.tasks.filter(t => t.desc && t.desc.trim()).length;
+  const doneTasks = p.tasks.filter(t => t.desc && t.desc.trim() && t.status === 2).length;
+  const pct = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0;
+  const circumference = 251.2;
+  const offset = circumference - (pct / 100) * circumference;
+  const ringFill = document.getElementById('projRingFill');
+  const ringLabel = document.getElementById('projRingLabel');
+  const taskBar = document.getElementById('projTaskBar');
+  if(ringFill) { ringFill.setAttribute('stroke-dashoffset', offset); }
+  if(ringLabel) { ringLabel.innerHTML = pct + '%<small>done</small>'; }
+  if(taskBar) { taskBar.style.width = pct + '%'; }
+  // Update the count text
+  const countEl = taskBar ? taskBar.parentElement.nextElementSibling : null;
+  if(countEl && countEl.tagName === 'DIV') countEl.textContent = doneTasks + ' of ' + totalTasks + ' tasks done';
+}
+
+// ─── PAGE 10: NOTES ───
+function switchNotes(btn, area) {
+  document.querySelectorAll('.notes-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.notes-area').forEach(a=>a.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('notes-'+area).classList.add('active');
+}
+
+// ─── MILESTONES ───
+const milestoneEmojis = ['🎂','🎓','😂','🏆','💛','🌟','🐾','🎉','😴','🏅'];
+function addMilestone() {
+  const list = document.getElementById('milestoneList');
+  const emo = milestoneEmojis[Math.floor(Math.random()*milestoneEmojis.length)];
+  const card = document.createElement('div');
+  card.className = 'milestone-card';
+  card.innerHTML = `<div class="milestone-emoji">${emo}</div><div class="milestone-text"><input placeholder="Describe this moment…" /><input placeholder="More details…" style="font-size:0.75rem;color:var(--text-light);" /></div><div class="milestone-date"><input type="date" style="border:none;background:transparent;font-size:0.7rem;font-family:'Nunito',sans-serif;color:var(--text-light);outline:none;width:100%;text-align:center;" /></div><button class="delete-btn" onclick="this.closest('.milestone-card').remove()">×</button>`;
+  list.appendChild(card);
+}
+
+// ─── QUOTES ───
+const quotes = [
+  '"Until one has loved an animal, a part of one\'s soul remains unawakened." — Anatole France 🐾',
+  '"The world would be a nicer place if everyone had the ability to love as unconditionally as a dog." — M.K. Clinton 🐶',
+  '"A dog is the only thing on earth that loves you more than they love themselves." — Josh Billings 🦴',
+  '"Cats choose us; we don\'t own them." — Kristin Cast 🐱',
+  '"The purity of a person\'s heart can be quickly measured by how they regard animals." — Anonymous 🌸',
+  '"Animals are such agreeable friends — they ask no questions; they pass no criticisms." — George Eliot 🌿',
+];
+function setRandomQuote() {
+  const el = document.getElementById('quoteBox');
+  if(el) el.textContent = quotes[Math.floor(Math.random()*quotes.length)];
+}
+
+// ─── VISION BOARD IMAGE UPLOAD ───
+const visionImages = {};
+function handleVisionUpload(idx, input) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    setVisionImage(idx, e.target.result);
+    try { localStorage.setItem('vision_img_'+idx, e.target.result); } catch(err) { console.warn('Image too large for localStorage'); }
+  };
+  reader.readAsDataURL(file);
+}
+function setVisionImage(idx, dataUrl) {
+  const frame = document.getElementById('visionFrame'+idx);
+  if(!frame) return;
+  frame.classList.add('has-image');
+  // Remove old img if exists
+  const oldImg = frame.querySelector('img');
+  if(oldImg) oldImg.remove();
+  const oldBtn = frame.querySelector('.remove-img');
+  if(oldBtn) oldBtn.remove();
+  const img = document.createElement('img');
+  img.src = dataUrl;
+  img.alt = 'Vision board photo';
+  frame.appendChild(img);
+  const btn = document.createElement('button');
+  btn.className = 'remove-img';
+  btn.innerHTML = '×';
+  btn.onclick = function(ev) {
+    ev.stopPropagation();
+    frame.classList.remove('has-image');
+    img.remove();
+    btn.remove();
+    try { localStorage.removeItem('vision_img_'+idx); } catch(e){}
+  };
+  frame.appendChild(btn);
+  visionImages[idx] = dataUrl;
+}
+function restoreVisionImages() {
+  for(let i=0;i<4;i++) {
+    try {
+      const data = localStorage.getItem('vision_img_'+i);
+      if(data) setVisionImage(i, data);
+    } catch(e){}
+  }
+}
+
+
+
+// ─── BUDGET FUNCTIONS ───
+function parseDollar(str) {
+  if(!str) return 0;
+  const n = parseFloat(str.replace(/[^0-9.\-]/g, ''));
+  return isNaN(n) ? 0 : n;
+}
+
+function updateBudgetSummary() {
+  const budget = parseDollar(document.getElementById('budgetInput').value || document.getElementById('budgetInput').placeholder);
+  let expenses = 0;
+  document.querySelectorAll('.expense-amount').forEach(el => {
+    expenses += parseDollar(el.value);
+  });
+  let subs = 0;
+  document.querySelectorAll('.sub-amount').forEach(el => {
+    subs += parseDollar(el.value);
+  });
+  document.getElementById('subTotal').textContent = 'Total: $' + subs.toFixed(0) + '/mo';
+  const spent = expenses + subs;
+  document.getElementById('spentDisplay').textContent = '$' + spent.toFixed(2);
+  const remaining = budget - spent;
+  document.getElementById('remainingDisplay').textContent = '$' + remaining.toFixed(2);
+  const pct = budget > 0 ? Math.min((spent / budget) * 100, 100) : 0;
+  document.getElementById('spentBar').style.width = pct + '%';
+  if(budget > 0) {
+    document.getElementById('remainingPct').textContent = Math.round(100 - pct) + '% of budget left';
+  } else {
+    document.getElementById('remainingPct').textContent = '—';
+  }
+  const stat = document.getElementById('remainingStat');
+  if(remaining < 0) {
+    stat.style.background = 'var(--blush-light)';
+    document.getElementById('remainingDisplay').style.color = 'var(--blush-mid)';
+  } else {
+    stat.style.background = 'var(--sage-light)';
+    document.getElementById('remainingDisplay').style.color = 'var(--text-dark)';
+  }
+}
+
+function addExpenseRow() {
+  const list = document.getElementById('expenseRows');
+  const row = document.createElement('div');
+  row.className = 'expense-row';
+  row.innerHTML = '<input class="line expense-item" style="margin:0;" placeholder="New expense…" /><select class="expense-cat" style="border:none;background:var(--beige-light);border-radius:50px;padding:4px 8px;font-family:Nunito,sans-serif;font-size:0.7rem;font-weight:700;color:var(--beige-mid);outline:none;cursor:pointer;"><option>🍗 Food</option><option>🏥 Vet</option><option>✂️ Groom</option><option>🎾 Toy</option><option>💊 Meds</option><option>📦 Other</option></select><input class="line expense-amount" oninput="updateBudgetSummary()" style="margin:0;" placeholder="$0" /><button class="delete-btn" onclick="this.closest(\'.expense-row\').remove();updateBudgetSummary();" style="margin-left:4px;">×</button>';
+  list.appendChild(row);
+}
+
+function addSubRow() {
+  const list = document.getElementById('subRows');
+  const row = document.createElement('div');
+  row.className = 'sub-row';
+  row.style.cssText = 'background:var(--beige-light);border-radius:10px;padding:10px 14px;display:grid;grid-template-columns:1fr 60px 70px 24px;gap:8px;align-items:center;';
+  row.innerHTML = '<input style="border:none;background:transparent;font-size:0.8rem;font-family:Nunito,sans-serif;color:var(--text-dark);outline:none;" placeholder="New subscription…" /><input style="border:none;background:transparent;font-size:0.8rem;font-family:Nunito,sans-serif;color:var(--text-mid);outline:none;text-align:center;" placeholder="Monthly" /><input class="sub-amount" oninput="updateBudgetSummary()" style="border:none;background:transparent;font-size:0.8rem;font-family:Nunito,sans-serif;color:var(--text-dark);outline:none;text-align:right;" placeholder="$0" /><button class="delete-btn" onclick="this.closest(\'.sub-row\').remove();updateBudgetSummary();">×</button>';
+  list.appendChild(row);
+}
+
+function updateSavings() {
+  [1,2].forEach(function(i) {
+    var currentEl = document.querySelector('.sav-current[data-sav="'+i+'"]');
+    var goalEl = document.querySelector('.sav-goal[data-sav="'+i+'"]');
+    var current = parseDollar(currentEl.value);
+    var goal = parseDollar(goalEl.value) || (i === 1 ? 1000 : 500);
+    var pct = goal > 0 ? Math.min((current / goal) * 100, 100) : 0;
+    document.getElementById('savBar' + i).style.width = pct + '%';
+    document.getElementById('savLabel' + i).textContent = '$' + current.toFixed(0) + ' / $' + goal.toFixed(0);
+  });
+}
+
+// ─── LOCALSTORAGE PERSISTENCE ───
+const SAVE_KEY = 'petplanner2026_v1';
+
+function saveAll() {
+  const data = {};
+  document.querySelectorAll('input[type=text],input[type=date],input:not([type]),textarea').forEach((el,i) => {
+    const key = el.dataset.sid || ('inp_' + i);
+    el.dataset.sid = key;
+    if(el.value) data[key] = el.value;
+  });
+  document.querySelectorAll('input[type=checkbox]').forEach((el,i) => {
+    const key = 'chk_' + i;
+    if(el.checked) data[key] = true;
+  });
+  document.querySelectorAll('.habit-box').forEach((el,i) => {
+    if(el.classList.contains('checked')) data['hb_'+i] = true;
+  });
+  document.querySelectorAll('.mood-btn').forEach((el,i) => {
+    if(el.classList.contains('active')) data['mood_'+i] = true;
+  });
+  document.querySelectorAll('.water-cup').forEach((el,i) => {
+    if(el.classList.contains('filled')) data['wc_'+i] = true;
+  });
+  document.querySelectorAll('.food-chip').forEach((el,i) => {
+    if(el.classList.contains('active')) data['fc_'+i] = true;
+  });
+  document.querySelectorAll('.vision-tag').forEach((el,i) => {
+    if(el.classList.contains('selected')) data['vt_'+i] = true;
+  });
+  document.querySelectorAll('select').forEach((el,i) => {
+    if(el.selectedIndex) data['sel_'+i] = el.selectedIndex;
+  });
+  data['__hd'] = JSON.stringify(habitData);
+  data['__cm'] = currentMonthIdx;
+  data['__hm'] = habitMonth;
+  saveCurrentProjectData();
+  data['__ps'] = JSON.stringify(projectStore);
+  data['__cp'] = currentProject;
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch(e) {}
+}
+
+function restoreAll() {
+  let data;
+  try { data = JSON.parse(localStorage.getItem(SAVE_KEY)||'null'); } catch(e){}
+  if(!data) return;
+  if(data['__hd']) { try { Object.assign(habitData, JSON.parse(data['__hd'])); } catch(e){} }
+  if(data['__cm'] !== undefined) { currentMonthIdx = data['__cm']; buildMonthCal(); }
+  if(data['__hm'] !== undefined) { habitMonth = data['__hm']; buildYearHabitTabs(); buildYearHabitGrid(); }
+  if(data['__ps']) { try { Object.assign(projectStore, JSON.parse(data['__ps'])); } catch(e){} }
+  if(data['__cp']) { currentProject = data['__cp']; }
+  renderProjectContent();
+  // Re-highlight active project button
+  document.querySelectorAll('#projectTypeRow .project-type-btn').forEach(b => b.classList.remove('active'));
+  const pidx = projectTypes.indexOf(currentProject);
+  const pbtns = document.querySelectorAll('#projectTypeRow .project-type-btn');
+  if(pbtns[pidx]) pbtns[pidx].classList.add('active');
+  document.querySelectorAll('input[type=text],input[type=date],input:not([type]),textarea').forEach((el,i) => {
+    const key = el.dataset.sid || ('inp_'+i);
+    el.dataset.sid = key;
+    if(data[key]) el.value = data[key];
+  });
+  document.querySelectorAll('input[type=checkbox]').forEach((el,i) => {
+    if(data['chk_'+i]) el.checked = true;
+  });
+  document.querySelectorAll('.habit-box').forEach((el,i) => {
+    if(data['hb_'+i]) el.classList.add('checked');
+  });
+  document.querySelectorAll('.mood-btn').forEach((el,i) => {
+    if(data['mood_'+i]) el.classList.add('active');
+  });
+  document.querySelectorAll('.water-cup').forEach((el,i) => {
+    if(data['wc_'+i]) el.classList.add('filled');
+  });
+  document.querySelectorAll('.food-chip').forEach((el,i) => {
+    if(data['fc_'+i]) el.classList.add('active');
+  });
+  document.querySelectorAll('.vision-tag').forEach((el,i) => {
+    if(data['vt_'+i]) el.classList.add('selected');
+  });
+  document.querySelectorAll('select').forEach((el,i) => {
+    if(data['sel_'+i] !== undefined) el.selectedIndex = data['sel_'+i];
+  });
+}
+
+// Save indicator toast
+const toast = document.createElement('div');
+toast.style.cssText = 'position:fixed;bottom:22px;right:26px;background:var(--sage);color:var(--text-dark);font-family:Nunito,sans-serif;font-size:0.75rem;font-weight:800;padding:8px 20px;border-radius:50px;box-shadow:0 4px 18px rgba(0,0,0,0.12);opacity:0;transition:opacity 0.3s;z-index:9999;pointer-events:none;letter-spacing:0.05em;';
+toast.textContent = '✓ Saved';
+document.body.appendChild(toast);
+let toastTimer;
+function showToast() {
+  clearTimeout(toastTimer);
+  toast.style.opacity = '1';
+  toastTimer = setTimeout(() => toast.style.opacity = '0', 1400);
+}
+
+let saveTimer;
+function debouncedSave() { clearTimeout(saveTimer); saveTimer = setTimeout(() => { saveAll(); showToast(); }, 400); }
+document.addEventListener('input', debouncedSave);
+document.addEventListener('change', debouncedSave);
+document.addEventListener('click', () => setTimeout(debouncedSave, 150));
+
+// ─── INIT ───
+restoreDayNotes();
+buildYearCal();
+buildMonthCal();
+buildHabitBoxes();
+buildWeekGrid();
+buildWaterCups();
+setDailyDate();
+buildYearHabitTabs();
+buildYearHabitGrid();
+buildMealPlanner();
+renderProjectContent();
+setRandomQuote();
+setTimeout(restoreAll, 80);
+setTimeout(restoreVisionImages, 120);
+
+// ─── iOS-SAFE NAV TAB LISTENERS ───
+document.querySelectorAll('.nav-btn[data-page]').forEach(function(btn) {
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    showPage(this.getAttribute('data-page'));
+  });
+  btn.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    showPage(this.getAttribute('data-page'));
+  });
+});
+</script>
+
+<!-- PWA Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(function(reg) { console.log('SW registered:', reg.scope); })
+        .catch(function(err) { console.warn('SW registration failed:', err); });
+    });
+  }
+</script>
+</body>
+</html>

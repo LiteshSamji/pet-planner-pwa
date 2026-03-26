@@ -1,0 +1,28 @@
+{
+  "name": "Pet Planner 2026",
+  "short_name": "Pet Planner",
+  "description": "A beautiful all-in-one pet planner for 2026 — calendars, habits, budget, meals & more.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F7F3FB",
+  "theme_color": "#C9BAE8",
+  "lang": "en-AU",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["lifestyle", "productivity", "utilities"]
+}
